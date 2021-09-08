@@ -640,5 +640,22 @@ Date:   Tue Sep 7 11:50:42 2021 +0800
 在交互的时候，把不连续的需要合并的commit拷贝到一起，然后squash
 
 # 如何比较暂存区和HEAD的文件
+git diff --cached `
 
+```
+ibaobao:Git bao$ git status
+On branch master
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   Git.md
+
+no changes added to commit (use "git add" and/or "git commit -a")
+ibaobao:Git bao$ git add Git.md
+ibaobao:Git bao$ git diff --cached 
+```
+
+# 如何比较工作区和暂存区所含文件的差异
+
+git diff 默认比较工作区与暂存区
 
