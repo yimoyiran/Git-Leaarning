@@ -3,11 +3,12 @@
 ## Git 官方网站
 https://git-scm.com/book/en/v2
 
-**官方安装网址** ：https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
+## 官方安装网址
+https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
 
-**Mac下安装**：
+### Mac下安装
 
-<img src="Mac-Git Install.png" style="zoom:100%;" />
+<img src="./image/Install_git_on_mac.png" style="zoom:100%;" />
 
 ##设置全局变量
 ```git config --global --list
@@ -23,7 +24,7 @@ git config --global user.email 'ada@163.com'
 
 2. 新建仓库，进入目标文件夹`git init my_folder`
    
-ls -al 查看 有 .git文件
+ `ls -al` 查看 有 .git文件
 ```
 //把需要git管控的文件加入进来 
 git add readMe 
@@ -39,10 +40,12 @@ git log
 
 # git工作区和暂存区
 
-//提交单个文件到暂存区
-git add readMe
-//提交目录下所有文件到暂存区
-git add -u
+提交单个文件到暂存区
+`git add readMe`
+
+提交目录下所有文件到暂存区
+`git add -u`
+
 
 ## 
 ```
@@ -656,6 +659,324 @@ ibaobao:Git bao$ git diff --cached
 ```
 
 # 如何比较工作区和暂存区所含文件的差异
+**理解什么是工作区（当前工作路径，还没add到暂存区的），暂存区（add但是还没提交的）和HEAD（提交以后的）**
 
-git diff 默认比较工作区与暂存区
+默认比较工作区与暂存区 
+`git diff` 
 
+# 如何将暂存区恢复成HEAD
+1. 恢复全部暂存区的文件 和HEAD一致
+
+    `git reset HEAD`
+    
+
+2. `git reset HEAD -- file1 file2 file3`
+
+     or 
+
+     `Changes to be committed:
+    (use "git restore --staged <file>..." to unstage)`
+3. 恢复指定的工作区的文件（恢复成和暂存区一样，相当于从暂存区拷贝到工作区）
+
+    `git checkout -- file_name`
+
+```
+ibaobao:Git bao$ git status
+On branch master
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	modified:   Git.md
+	modified:   readMe.md
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   readMe.md
+
+ibaobao:Git bao$ git diff
+diff --git a/readMe.md b/readMe.md
+index aae1b64..40145fb 100644
+--- a/readMe.md
++++ b/readMe.md
+@@ -1,2 +1,3 @@
+ this is readMe v1.0
+-this is my changes
++this is my changes test
++
+ibaobao:Git bao$ git checkout -- readMe.md
+ibaobao:Git bao$ git diff
+ibaobao:Git bao$ git status
+On branch master
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	modified:   Git.md
+	modified:   readMe.md
+
+
+    ibaobao:Git bao$ git status
+On branch master
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	modified:   Git.md
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   readMe.md
+
+ibaobao:Git bao$ git add readMe.md
+ibaobao:Git bao$ git status
+On branch master
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	modified:   Git.md
+	modified:   readMe.md
+```
+
+```
+ibaobao:Git bao$ git status
+On branch master
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	modified:   Git.md
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   readMe.md
+
+ibaobao:Git bao$ git diff
+diff --git a/readMe.md b/readMe.md
+index c35b048..aae1b64 100644
+--- a/readMe.md
++++ b/readMe.md
+@@ -1 +1,2 @@
+ this is readMe v1.0
++this is my changes
+ibaobao:Git bao$ vi readMe.md
+ibaobao:Git bao$ git restore --staged readMe.md
+ibaobao:Git bao$ git diff
+diff --git a/readMe.md b/readMe.md
+index c35b048..30d42e0 100644
+--- a/readMe.md
++++ b/readMe.md
+@@ -1 +1,2 @@
+-this is readMe v1.0
++qqqqthis is readMe v1.0
++this is my changes
+ibaobao:Git bao$ git status
+On branch master
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	modified:   Git.md
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   readMe.md
+
+ibaobao:Git bao$ cat readMe.md
+qqqqthis is readMe v1.0
+this is my changes
+ibaobao:Git bao$ git add readMe.md
+ibaobao:Git bao$ git status
+On branch master
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	modified:   Git.md
+	modified:   readMe.md
+
+ibaobao:Git bao$ git reset HEAD -- readMe.md
+Unstaged changes after reset:
+M	readMe.md
+ibaobao:Git bao$ cat readMe.md
+qqqqthis is readMe v1.0
+this is my changes
+ibaobao:Git bao$ git status
+On branch master
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	modified:   Git.md
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   readMe.md
+
+ibaobao:Git bao$ cat readMe.md
+qqqqthis is readMe v1.0
+this is my changes
+```
+
+# 回退前面几次commit
+
+`git reset --hard des_commit`  加上想回退到的commit代码
+```
+ibaobao:Git bao$ git log --graph
+* commit b68bf950b69cdc0def97f0af4056ca656f86b3e5 (HEAD -> temp)
+| Author: Ada <wangjiejingada@163.com>
+| Date:   Tue Sep 7 15:13:27 2021 +0800
+| 
+|     Add temp branch fix
+| 
+* commit 36f5ff39ae469e013af1f8e00d4d3d31c891ce7e
+| Author: Ada <wangjiejingada@163.com>
+| Date:   Tue Sep 7 14:16:51 2021 +0800
+| 
+|     add git.md
+| 
+* commit 107ce61751119390133c0cfdbfa38eca801091d1
+  Author: Ada <wangjiejingada@163.com>
+  Date:   Tue Sep 7 11:50:42 2021 +0800
+  
+      Add readMe
+ibaobao:Git bao$ git reset --hard 107ce61751119390133c0cfdbfa38eca801091d1
+HEAD is now at 107ce61 Add readMe
+ibaobao:Git bao$ git log
+commit 107ce61751119390133c0cfdbfa38eca801091d1 (HEAD -> temp)
+Author: Ada <wangjiejingada@163.com>
+Date:   Tue Sep 7 11:50:42 2021 +0800
+
+    Add readMe
+
+```
+
+# 比较不同分支commit的指定的文件差异
+`git diff master temp -- file`
+也可以用分支对应的id去比较
+
+
+```
+ibaobao:Git bao$ git diff master temp -- readMe.md
+ibaobao:Git bao$ git branch -av
+  fix_defect01 4883338 add detached head comment
+  fix_readMe   284e2cf add detached head comments
+* master       0006f39 Submit
+  temp         107ce61 Add readMe
+ibaobao:Git bao$ git 0006f39 107ce61 --readMe.md
+```
+
+# 删除文件
+
+删除file直接会进去暂存区
+`git rm file`
+
+
+```
+ibaobao:Git bao$ ls
+Git.md		image		readMe.md	test
+ibaobao:Git bao$ cat test
+test
+ibaobao:Git bao$ git add test
+ibaobao:Git bao$ git commit -m'add test'
+[master e83378a] add test
+ 1 file changed, 1 insertion(+)
+ create mode 100644 test
+ibaobao:Git bao$ git status
+On branch master
+nothing to commit, working tree clean
+ibaobao:Git bao$ git rm test
+rm 'test'
+ibaobao:Git bao$ git status
+On branch master
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	deleted:    test
+
+ibaobao:Git bao$ ls
+Git.md		image		readMe.md
+ibaobao:Git bao$ git commit -m'delet test'
+[master f72e1e2] delet test
+ 1 file changed, 1 deletion(-)
+ delete mode 100644 test
+ibaobao:Git bao$ git status
+On branch master
+nothing to commit, working tree clean
+```
+
+
+
+# GITHUB 
+
+## 配置公私钥
+1. 查看是否已经存在ssh key
+
+* Enter ls -al ~/.ssh to see if existing SSH keys are present:
+```
+$ ls -al ~/.ssh
+```
+* Lists the files in your .ssh directory, if they exist
+Check the directory listing to see if you already have a public SSH key. By default, the filenames of the public keys are one of the following:
+```
+id_rsa.pub
+id_ecdsa.pub
+id_ed25519.pub
+```
+### 创建公钥：
+`
+ssh-keygen -t ed25519 -C "your_email@example.com"`
+
+如果是旧的系统，可以用如下命令：
+
+`ssh-keygen -t rsa -b 4096 -C "wangjiejingada@163.com"`
+
+```
+ibaobao:~ bao$ ssh-keygen -t rsa -b 4096 -C "wangjiejingada@163.com"
+Generating public/private rsa key pair.
+Enter file in which to save the key (/Users/bao/.ssh/id_rsa): 
+Created directory '/Users/bao/.ssh'.
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /Users/bao/.ssh/id_rsa.
+Your public key has been saved in /Users/bao/.ssh/id_rsa.pub.
+The key fingerprint is:
+SHA256:mQ+ZJ8ZDdE2xtp1qV1AflWKg4dhTM9jvUJ7ANkWu0W0 wangjiejingada@163.com
+The key's randomart image is:
++---[RSA 4096]----+
+|        ..=B*+ .=|
+|       .+o+**=.oo|
+|       ..=..Xo+E.|
+|       o =.oo*.o |
+|        S ..+ o .|
+|       . *   o . |
+|          . o .  |
+|           . .   |
+|                 |
++----[SHA256]-----+
+ibaobao:~ bao$ cd ~/.ssh
+ibaobao:.ssh bao$ ls
+id_rsa		id_rsa.pub
+
+
+ibaobao:.ssh bao$ ssh-keygen -t ed25519 -C "wangjiejingada@163.com"
+Generating public/private ed25519 key pair.
+Enter file in which to save the key (/Users/bao/.ssh/id_ed25519): 
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /Users/bao/.ssh/id_ed25519.
+Your public key has been saved in /Users/bao/.ssh/id_ed25519.pub.
+The key fingerprint is:
+SHA256:bv+2CMusYn8tPTAuEz7IoCN5Rziwa2kS94Il+mCBuXY wangjiejingada@163.com
+The key's randomart image is:
++--[ED25519 256]--+
+|                 |
+|                 |
+|                 |
+|o.               |
+|o+ .    S        |
+|+.B . ..o        |
+|+%.E o o+=       |
+|%=+ B =++++..    |
+|=+.+ oo*+.o+o.   |
++----[SHA256]-----+
+ibaobao:.ssh bao$ ls -al ~/.ssh
+total 32
+drwx------   6 bao  staff   192  9 13 11:19 .
+drwxr-xr-x+ 48 bao  staff  1536  9 13 11:10 ..
+-rw-------   1 bao  staff   419  9 13 11:19 id_ed25519
+-rw-r--r--   1 bao  staff   104  9 13 11:19 id_ed25519.pub
+-rw-------   1 bao  staff  3389  9 13 11:10 id_rsa
+-rw-r--r--   1 bao  staff   748  9 13 11:10 id_rsa.pub
+```
+
+## 
