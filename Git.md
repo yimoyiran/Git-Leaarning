@@ -417,7 +417,7 @@ HEAD的一些用法
 >HEAD^^ 上上一个commit  （或者HEAD～2）
 
 //查看分支
-`git branch -ava`
+`git branch -av`
 
 //新建分支并切换
 `git checkout -b new_branch_name old_branch（或者指定commit）`
@@ -893,7 +893,76 @@ ibaobao:Git bao$ git status
 On branch master
 nothing to commit, working tree clean
 ```
+# Git的备份
+## 传输协议
+|协议|协议格式|协议类型|
+|---|---|---|
+| 本地协议一|/path/to/repo.git| 哑协议|
+| 本地协议二 | file:///path/to/repo.git| 智能协议|
+| http/https协议 | http://git-server.com:prt/path/to/repo.git | 智能协议|
+| ssh协议 |user@git-server.com：path/to/repo.git   | 工作中常用的智能协议|
 
+`git clone --bare file:///Users/bao/Documents/10-MyNotes/Git/.git zhineng.git `
+
+`git push 备份区` 在工作区执行此命令即可直接同步本地备份数据
+(如果有提示，需要设置上游分支 `git push --set-upstream zhineng  myBranch`)
+
+### 本地使用哑协议克隆备份
+```
+--创建本地备份文件夹，并执行clone
+ibaobao:10-MyNotes bao$ mkdir git-backup
+ibaobao:10-MyNotes bao$ cd git-back
+ibaobao:git-backup bao$ git clone --bare /Users/bao/Documents/10-MyNotes/Git/.git ya.git
+Cloning into bare repository 'ya.git'...
+done.
+```
+### 本地使用智能协议克隆备份 - 有clone进度条，有压缩，速度快
+```
+ibaobao:git-backup bao$ git clone --bare file:///Users/bao/Documents/10-MyNotes/Git/.git zhineng.git
+Cloning into bare repository 'zhineng.git'...
+remote: Enumerating objects: 35, done.
+remote: Counting objects: 100% (35/35), done.
+remote: Compressing objects: 100% (27/27), done.
+remote: Total 35 (delta 6), reused 0 (delta 0), pack-reused 0
+Receiving objects: 100% (35/35), 327.38 KiB | 12.13 MiB/s, done.
+Resolving deltas: 100% (6/6), done.
+ibaobao:git-backup bao$ ls
+ya.git		zhineng.git
+
+```
+```
+--切换回工作区
+
+
+ibaobao:Git bao$ git remote add zhineng file:///Users/bao/Documents/10-MyNotes/git-backup/zhineng.git
+ibaobao:Git bao$ git remote -v
+
+zhineng	file:///Users/bao/Documents/10-MyNotes/git-backup/zhineng.git (fetch)
+zhineng	file:///Users/bao/Documents/10-MyNotes/git-backup/zhineng.git (push)
+
+ibaobao:Git bao$ git checkout -b testBranch c242b886faf7ff2f74cb0f8e91bde5f2c1f6dfea
+Switched to a new branch 'testBranch'
+
+baobao:Git bao$ cd /Users/bao/Documents/10-MyNotes/Git
+ibaobao:Git bao$ git branch -av
+  fix_defect01 4883338 add detached head comment
+  fix_readMe   284e2cf add detached head comments
+  master       c242b88 add github_ssh_link.png
+  temp         107ce61 Add readMe
+* testBranch   c242b88 add github_ssh_link.png
+ibaobao:Git bao$ git push zhineng
+Enumerating objects: 6, done.
+Counting objects: 100% (6/6), done.
+Delta compression using up to 4 threads
+Compressing objects: 100% (4/4), done.
+Writing objects: 100% (4/4), 84.30 KiB | 3.37 MiB/s, done.
+Total 4 (delta 0), reused 0 (delta 0), pack-reused 0
+To file:///Users/bao/Documents/10-MyNotes/git-backup/zhineng.git
+ * [new branch]      testBranch -> testBranch
+ * 
+```
+
+`git remote -v`
 
 
 # GITHUB 
@@ -919,6 +988,8 @@ ssh-keygen -t ed25519 -C "your_email@example.com"`
 如果是旧的系统，可以用如下命令：
 
 `ssh-keygen -t rsa -b 4096 -C "wangjiejingada@163.com"`
+
+将公钥粘贴到github账户上
 
 ```
 ibaobao:~ bao$ ssh-keygen -t rsa -b 4096 -C "wangjiejingada@163.com"
@@ -979,4 +1050,174 @@ drwxr-xr-x+ 48 bao  staff  1536  9 13 11:10 ..
 -rw-r--r--   1 bao  staff   748  9 13 11:10 id_rsa.pub
 ```
 
-## 
+ 
+
+## Git本地仓库同步到github
+`git remote add github git@github.com:yimoyiran/Git-Leaarning.git`
+其中`git@github.com:yimoyiran/Git-Leaarning.git`从github上创建的仓库中复制，注意协议选择，这里是ssh协议
+<img src="./image/github_ssh_link.png" style="zoom:100%;" />
+```
+ibaobao:Git bao$ pwd
+/Users/bao/Documents/10-MyNotes/Git
+ibaobao:Git bao$ git remote add github git@github.com:yimoyiran/Git-Leaarning.git
+ibaobao:Git bao$ git remote -v
+github	git@github.com:yimoyiran/Git-Leaarning.git (fetch)
+github	git@github.com:yimoyiran/Git-Leaarning.git (push)
+```
+
+同步所有分支到远程github：
+`git push github --all`
+
+同步指定分支到远程github：
+`git push github master`
+
+从github吧分支main拉下来：
+`git pull github main`
+
+把不相关的两棵树merge在一起：
+当前branch切换到master，然后执行以下命令，相当于要merge master 与 远程的github\main
+
+`git merge github/main`
+
+```
+ibaobao:Git bao$ git pull github main
+remote: Enumerating objects: 3, done.
+remote: Counting objects: 100% (3/3), done.
+remote: Compressing objects: 100% (2/2), done.
+remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
+Unpacking objects: 100% (3/3), 1.17 KiB | 240.00 KiB/s, done.
+From github.com:yimoyiran/Git-Leaarning
+ * branch            main       -> FETCH_HEAD
+ * [new branch]      main       -> github/main
+hint: Pulling without specifying how to reconcile divergent branches is
+hint: discouraged. You can squelch this message by running one of the following
+hint: commands sometime before your next pull:
+hint: 
+hint:   git config pull.rebase false  # merge (the default strategy)
+hint:   git config pull.rebase true   # rebase
+hint:   git config pull.ff only       # fast-forward only
+hint: 
+hint: You can replace "git config" with "git config --global" to set a default
+hint: preference for all repositories. You can also pass --rebase, --no-rebase,
+hint: or --ff-only on the command line to override the configured default per
+hint: invocation.
+fatal: refusing to merge unrelated histories
+ibaobao:Git bao$ git branch -av
+  fix_defect01                4883338 add detached head comment
+  fix_readMe                  284e2cf add detached head comments
+* master                      4e8190b update master readMe
+  temp                        107ce61 Add readMe
+  testBranch                  c242b88 add github_ssh_link.png
+  remotes/github/fix_defect01 4883338 add detached head comment
+  remotes/github/fix_readMe   284e2cf add detached head comments
+  remotes/github/main         9d662b3 Initial commit
+  remotes/github/master       4e8190b update master readMe
+  remotes/github/temp         107ce61 Add readMe
+  remotes/github/testBranch   c242b88 add github_ssh_link.png
+  remotes/zhineng/testBranch  c242b88 add github_ssh_link.png
+ibaobao:Git bao$ gitk --all
+DEPRECATION WARNING: The system version of Tk is deprecated and may be removed in a future release. Please don't rely on it. Set TK_SILENCE_DEPRECATION=1 to suppress this warning.
+2021-09-16 12:46:17.977 Wish[20328:3425324] CoreText note: Client requested name ".SFNSMono-Regular", it will get Times-Roman rather than the intended font. All system UI font access should be through proper APIs such as CTFontCreateUIFontForLanguage() or +[NSFont systemFontOfSize:].
+2021-09-16 12:46:17.977 Wish[20328:3425324] CoreText note: Set a breakpoint on CTFontLogSystemFontNameRequest to debug.
+2021-09-16 12:46:18.034 Wish[20328:3425324] CoreText note: Client requested name ".SF NS Mono", it will get Times-Roman rather than the intended font. All system UI font access should be through proper APIs such as CTFontCreateUIFontForLanguage() or +[NSFont systemFontOfSize:].
+ibaobao:Git bao$ git checkout master
+Already on 'master'
+ibaobao:Git bao$ git merge github/main
+fatal: refusing to merge unrelated histories
+ibaobao:Git bao$ git merge --help
+ibaobao:Git bao$ git merge --allow-unrelated-histories github/main
+Merge made by the 'recursive' strategy.
+ LICENSE | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+ create mode 100644 LICENSE
+ibaobao:Git bao$ git branch -av
+  fix_defect01                4883338 add detached head comment
+  fix_readMe                  284e2cf add detached head comments
+* master                      d1f4499 Merge remote-tracking branch 'github/main' add licence from github to local
+  temp                        107ce61 Add readMe
+  testBranch                  c242b88 add github_ssh_link.png
+  remotes/github/fix_defect01 4883338 add detached head comment
+  remotes/github/fix_readMe   284e2cf add detached head comments
+  remotes/github/main         9d662b3 Initial commit
+  remotes/github/master       4e8190b update master readMe
+  remotes/github/temp         107ce61 Add readMe
+  remotes/github/testBranch   c242b88 add github_ssh_link.png
+  remotes/zhineng/testBranch  c242b88 add github_ssh_link.png
+ibaobao:Git bao$ ls
+Git.md		LICENSE		image		readMe.md
+
+```
+
+## 不同人修改不同的文件
+
+在本地再搭建一个工作环境，模仿另一个人的工作
+1.clone
+2.设置环境变量
+```shell
+ibaobao:10-MyNotes bao$ git clone git@github.com:yimoyiran/Git-Leaarning.git git_test
+Cloning into 'git_test'...
+remote: Enumerating objects: 56, done.
+remote: Counting objects: 100% (56/56), done.
+remote: Compressing objects: 100% (38/38), done.
+remote: Total 56 (delta 12), reused 46 (delta 9), pack-reused 0
+Receiving objects: 100% (56/56), 414.86 KiB | 426.00 KiB/s, done.
+Resolving deltas: 100% (12/12), done.
+ibaobao:10-MyNotes bao$ ls
+Git		git-backup	git_test
+ibaobao:git_test bao$ git config --add --local user.name 'yimo'
+ibaobao:git_test bao$ git config --add --local user.email 'yimo@163.com'
+```
+```shell
+ibaobao:git_test bao$ git branch -av
+* main                                    868a219 Update readMe.md
+  remotes/origin/HEAD                     -> origin/main
+  remotes/origin/feature/add_git_commands c10f4e4 Update readMe.md
+  remotes/origin/fix_defect01             4883338 add detached head comment
+  remotes/origin/fix_readMe               284e2cf add detached head comments
+  remotes/origin/main                     868a219 Update readMe.md
+  remotes/origin/master                   d1f4499 Merge remote-tracking branch 'github/main' add licence from github to local
+  remotes/origin/temp                     107ce61 Add readMe
+  remotes/origin/testBranch               c242b88 add github_ssh_link.png
+ibaobao:git_test bao$ git checkout -b feature/add_git_commands_yimo origin/feature/add_git_commands
+Branch 'feature/add_git_commands_yimo' set up to track remote branch 'feature/add_git_commands' from 'origin'.
+Switched to a new branch 'feature/add_git_commands_yimo'
+ibaobao:git_test bao$ git branch -v
+* feature/add_git_commands_yimo c10f4e4 Update readMe.md
+  main                          868a219 Update readMe.md
+ibaobao:git_test bao$ vi readMe.md
+ibaobao:git_test bao$ git add -u
+ibaobao:git_test bao$ git status
+On branch feature/add_git_commands_yimo
+Your branch is up to date with 'origin/feature/add_git_commands'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	modified:   readMe.md
+
+ibaobao:git_test bao$ git commit -m 'Add git command desc in readMe.md'
+[feature/add_git_commands_yimo e017715] Add git command desc in readMe.md
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+ibaobao:git_test bao$ git push
+fatal: The upstream branch of your current branch does not match
+the name of your current branch.  To push to the upstream branch
+on the remote, use
+
+    git push origin HEAD:feature/add_git_commands
+
+To push to the branch of the same name on the remote, use
+
+    git push origin HEAD
+
+ibaobao:git_test bao$ git push origin HEAD:feature/add_git_commands
+
+Enumerating objects: 5, done.
+Counting objects: 100% (5/5), done.
+Delta compression using up to 4 threads
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (3/3), 338 bytes | 169.00 KiB/s, done.
+Total 3 (delta 1), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (1/1), completed with 1 local object.
+To github.com:yimoyiran/Git-Leaarning.git
+   c10f4e4..e017715  HEAD -> feature/add_git_commands
+```
+## 不同人修改了相同文件的相同区域
