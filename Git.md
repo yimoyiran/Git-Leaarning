@@ -964,7 +964,103 @@ To file:///Users/bao/Documents/10-MyNotes/git-backup/zhineng.git
 
 `git remote -v`
 
+## 遇到紧急任务，需要把手头工作存起来
+工作区有文件在暂存区，有些还在修改
 
+`git stash`  将当前工作区状态存起来
+
+`git stash list`  可以查看存起来的工作区stack
+
+`git stash apply` 最上面的工作区内容恢复，但是不出栈，可以反复用
+
+`git stash pop`  最上面的工作区内容恢复，工作区内容出栈，stash里删除对应状态
+
+```shell
+ibaobao:Git bao$ git stash
+Saved working directory and index state WIP on add_git_commands: a118f1a git mv readMe.md readMe.txt
+ibaobao:Git bao$ git pull
+remote: Enumerating objects: 8, done.
+remote: Counting objects: 100% (8/8), done.
+remote: Compressing objects: 100% (2/2), done.
+remote: Total 5 (delta 3), reused 5 (delta 3), pack-reused 0
+Unpacking objects: 100% (5/5), 553 bytes | 69.00 KiB/s, done.
+From github.com:yimoyiran/Git-Leaarning
+   a118f1a..152284d  feature/add_git_commands -> github/feature/add_git_commands
+Updating a118f1a..152284d
+Fast-forward
+ readMe.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+ibaobao:Git bao$ git stash list
+stash@{0}: WIP on add_git_commands: a118f1a git mv readMe.md readMe.txt
+ibaobao:Git bao$ git pull
+Already up to date.
+ibaobao:Git bao$ git status
+On branch feature/add_git_commands
+Your branch is up to date with 'github/feature/add_git_commands'.
+
+nothing to commit, working tree clean
+ibaobao:Git bao$ git stash apply
+On branch feature/add_git_commands
+Your branch is up to date with 'github/feature/add_git_commands'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	new file:   index.html
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   Git.md
+
+ibaobao:Git bao$ git stash list
+stash@{0}: WIP on add_git_commands: a118f1a git mv readMe.md readMe.txt
+ibaobao:Git bao$ git stash pop
+error: Your local changes to the following files would be overwritten by merge:
+	Git.md
+Please commit your changes or stash them before you merge.
+Aborting
+The stash entry is kept in case you need it again.
+--重置工作区内容
+ibaobao:Git bao$ git reset --hard HEAD
+HEAD is now at 152284d Merge branch 'feature/add_git_commands' of github.com:yimoyiran/Git-Leaarning into feature/add_git_commands_yimo
+ibaobao:Git bao$ git status
+On branch feature/add_git_commands
+Your branch is up to date with 'github/feature/add_git_commands'.
+
+nothing to commit, working tree clean
+ibaobao:Git bao$ git stash pop
+On branch feature/add_git_commands
+Your branch is up to date with 'github/feature/add_git_commands'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	new file:   index.html
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   Git.md
+
+Dropped refs/stash@{0} (41aa72f307db4c6f0ac864cd7e6395d136244aa8)
+ibaobao:Git bao$ git status
+On branch feature/add_git_commands
+Your branch is up to date with 'github/feature/add_git_commands'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	new file:   index.html
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   Git.md
+
+ibaobao:Git bao$ git commit -m "Add index.html"
+[feature/add_git_commands 2237970] Add index.html
+ 1 file changed, 1 insertion(+)
+ create mode 100644 index.html
+
+```
 # GITHUB 
 
 ## 配置公私钥
@@ -1220,4 +1316,516 @@ remote: Resolving deltas: 100% (1/1), completed with 1 local object.
 To github.com:yimoyiran/Git-Leaarning.git
    c10f4e4..e017715  HEAD -> feature/add_git_commands
 ```
+模拟另一个人提交工作：
+```shell
+ibaobao:10-MyNotes bao$ ls
+Git		git-backup	git_test
+ibaobao:10-MyNotes bao$ cd Git
+ibaobao:Git bao$ ls
+Git.md		LICENSE		image		readMe.md
+ibaobao:Git bao$ git branch -av
+  fix_defect01                4883338 add detached head comment
+  fix_readMe                  284e2cf add detached head comments
+* main                        868a219 Update readMe.md
+  master                      d1f4499 Merge remote-tracking branch 'github/main' add licence from github to local
+  temp                        107ce61 Add readMe
+  testBranch                  c242b88 add github_ssh_link.png
+  remotes/github/fix_defect01 4883338 add detached head comment
+  remotes/github/fix_readMe   284e2cf add detached head comments
+  remotes/github/main         868a219 Update readMe.md
+  remotes/github/master       d1f4499 Merge remote-tracking branch 'github/main' add licence from github to local
+  remotes/github/temp         107ce61 Add readMe
+  remotes/github/testBranch   c242b88 add github_ssh_link.png
+  remotes/zhineng/testBranch  c242b88 add github_ssh_link.png
+ibaobao:Git bao$ git fetch github
+remote: Enumerating objects: 5, done.
+remote: Counting objects: 100% (5/5), done.
+remote: Compressing objects: 100% (2/2), done.
+remote: Total 3 (delta 1), reused 3 (delta 1), pack-reused 0
+Unpacking objects: 100% (3/3), 318 bytes | 53.00 KiB/s, done.
+From github.com:yimoyiran/Git-Leaarning
+ * [new branch]      feature/add_git_commands -> github/feature/add_git_commands
+ibaobao:Git bao$ git branch -av
+  fix_defect01                            4883338 add detached head comment
+  fix_readMe                              284e2cf add detached head comments
+* main                                    868a219 Update readMe.md
+  master                                  d1f4499 Merge remote-tracking branch 'github/main' add licence from github to local
+  temp                                    107ce61 Add readMe
+  testBranch                              c242b88 add github_ssh_link.png
+  remotes/github/feature/add_git_commands e017715 Add git command desc in readMe.md
+  remotes/github/fix_defect01             4883338 add detached head comment
+  remotes/github/fix_readMe               284e2cf add detached head comments
+  remotes/github/main                     868a219 Update readMe.md
+  remotes/github/master                   d1f4499 Merge remote-tracking branch 'github/main' add licence from github to local
+  remotes/github/temp                     107ce61 Add readMe
+  remotes/github/testBranch               c242b88 add github_ssh_link.png
+  remotes/zhineng/testBranch              c242b88 add github_ssh_link.png
+ibaobao:Git bao$ git checkout -b feature/add_git_commands github/feature/add_git_commands
+Branch 'feature/add_git_commands' set up to track remote branch 'feature/add_git_commands' from 'github'.
+Switched to a new branch 'feature/add_git_commands'
+ibaobao:Git bao$ git branch -av
+* feature/add_git_commands                e017715 Add git command desc in readMe.md
+  fix_defect01                            4883338 add detached head comment
+  fix_readMe                              284e2cf add detached head comments
+  main                                    868a219 Update readMe.md
+  master                                  d1f4499 Merge remote-tracking branch 'github/main' add licence from github to local
+  temp                                    107ce61 Add readMe
+  testBranch                              c242b88 add github_ssh_link.png
+  remotes/github/feature/add_git_commands e017715 Add git command desc in readMe.md
+  remotes/github/fix_defect01             4883338 add detached head comment
+  remotes/github/fix_readMe               284e2cf add detached head comments
+  remotes/github/main                     868a219 Update readMe.md
+  remotes/github/master                   d1f4499 Merge remote-tracking branch 'github/main' add licence from github to local
+  remotes/github/temp                     107ce61 Add readMe
+  remotes/github/testBranch               c242b88 add github_ssh_link.png
+  remotes/zhineng/testBranch              c242b88 add github_ssh_link.png
+ibaobao:Git bao$ ls
+Git.md		LICENSE		image		readMe.md
+ibaobao:Git bao$ git status
+On branch feature/add_git_commands
+Your branch is up to date with 'github/feature/add_git_commands'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   Git.md
+
+no changes added to commit (use "git add" and/or "git commit -a")
+ibaobao:Git bao$ git add -u
+ibaobao:Git bao$ git status
+On branch feature/add_git_commands
+Your branch is up to date with 'github/feature/add_git_commands'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	modified:   Git.md
+
+ibaobao:Git bao$ git commit -m 'Modified Git.md'
+[feature/add_git_commands 4ba38e1] Modified Git.md
+ 1 file changed, 243 insertions(+), 2 deletions(-)
+ibaobao:Git bao$ git status
+On branch feature/add_git_commands
+Your branch is ahead of 'github/feature/add_git_commands' by 1 commit.
+  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean
+
+ibaobao:10-MyNotes bao$ ls
+Git		git-backup	git_test
+ibaobao:10-MyNotes bao$ cd git_test
+ibaobao:git_test bao$ ls
+Git.md		LICENSE		image		readMe.md
+ibaobao:git_test bao$ vi readMe.md
+ibaobao:git_test bao$ git add -u
+ibaobao:git_test bao$ git commit -m "Update readMe.md with eg"
+[feature/add_git_commands_yimo 8c525f5] Update readMe.md with eg
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+ibaobao:git_test bao$ git status
+On branch feature/add_git_commands_yimo
+Your branch is ahead of 'origin/feature/add_git_commands' by 1 commit.
+  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean
+ibaobao:git_test bao$ git push
+fatal: The upstream branch of your current branch does not match
+the name of your current branch.  To push to the upstream branch
+on the remote, use
+
+    git push origin HEAD:feature/add_git_commands
+
+To push to the branch of the same name on the remote, use
+
+    git push origin HEAD
+
+ibaobao:git_test bao$ git push origin HEAD:feature/add_git_commands
+Enumerating objects: 5, done.
+Counting objects: 100% (5/5), done.
+Delta compression using up to 4 threads
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (3/3), 289 bytes | 289.00 KiB/s, done.
+Total 3 (delta 2), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+To github.com:yimoyiran/Git-Leaarning.git
+   e017715..8c525f5  HEAD -> feature/add_git_commands
+ibaobao:git_test bao$ cd ..
+ibaobao:10-MyNotes bao$ cd  Git
+ibaobao:Git bao$ ls
+Git.md		LICENSE		image		readMe.md
+ibaobao:Git bao$ git status
+On branch feature/add_git_commands
+Your branch is ahead of 'github/feature/add_git_commands' by 1 commit.
+  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean
+ibaobao:Git bao$ git branch -av
+* feature/add_git_commands                4ba38e1 [ahead 1] Modified Git.md
+  fix_defect01                            4883338 add detached head comment
+  fix_readMe                              284e2cf add detached head comments
+  main                                    868a219 Update readMe.md
+  master                                  d1f4499 Merge remote-tracking branch 'github/main' add licence from github to local
+  temp                                    107ce61 Add readMe
+  testBranch                              c242b88 add github_ssh_link.png
+  remotes/github/feature/add_git_commands e017715 Add git command desc in readMe.md
+  remotes/github/fix_defect01             4883338 add detached head comment
+  remotes/github/fix_readMe               284e2cf add detached head comments
+  remotes/github/main                     868a219 Update readMe.md
+  remotes/github/master                   d1f4499 Merge remote-tracking branch 'github/main' add licence from github to local
+  remotes/github/temp                     107ce61 Add readMe
+  remotes/github/testBranch               c242b88 add github_ssh_link.png
+  remotes/zhineng/testBranch              c242b88 add github_ssh_link.png
+ibaobao:Git bao$ git push github
+Warning: Permanently added the RSA host key for IP address '52.74.223.119' to the list of known hosts.
+To github.com:yimoyiran/Git-Leaarning.git
+ ! [rejected]        feature/add_git_commands -> feature/add_git_commands (fetch first)
+error: failed to push some refs to 'github.com:yimoyiran/Git-Leaarning.git'
+hint: Updates were rejected because the remote contains work that you do
+hint: not have locally. This is usually caused by another repository pushing
+hint: to the same ref. You may want to first integrate the remote changes
+hint: (e.g., 'git pull ...') before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+ibaobao:Git bao$ git fetch github
+remote: Enumerating objects: 5, done.
+remote: Counting objects: 100% (5/5), done.
+remote: Compressing objects: 100% (1/1), done.
+remote: Total 3 (delta 2), reused 3 (delta 2), pack-reused 0
+Unpacking objects: 100% (3/3), 269 bytes | 67.00 KiB/s, done.
+From github.com:yimoyiran/Git-Leaarning
+   e017715..8c525f5  feature/add_git_commands -> github/feature/add_git_commands
+ibaobao:Git bao$ git branch -av
+* feature/add_git_commands                4ba38e1 [ahead 1, behind 1] Modified Git.md
+  fix_defect01                            4883338 add detached head comment
+  fix_readMe                              284e2cf add detached head comments
+  main                                    868a219 Update readMe.md
+  master                                  d1f4499 Merge remote-tracking branch 'github/main' add licence from github to local
+  temp                                    107ce61 Add readMe
+  testBranch                              c242b88 add github_ssh_link.png
+  remotes/github/feature/add_git_commands 8c525f5 Update readMe.md with eg
+  remotes/github/fix_defect01             4883338 add detached head comment
+  remotes/github/fix_readMe               284e2cf add detached head comments
+  remotes/github/main                     868a219 Update readMe.md
+  remotes/github/master                   d1f4499 Merge remote-tracking branch 'github/main' add licence from github to local
+  remotes/github/temp                     107ce61 Add readMe
+  remotes/github/testBranch               c242b88 add github_ssh_link.png
+  remotes/zhineng/testBranch              c242b88 add github_ssh_link.png
+ibaobao:Git bao$ git merge github/feature/add_git/commands 
+merge: github/feature/add_git/commands - not something we can merge
+ibaobao:Git bao$ git merge github/feature/add_git_commands
+Merge made by the 'recursive' strategy.
+ readMe.md | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+ ibaobao:Git bao$ git push
+Enumerating objects: 9, done.
+Counting objects: 100% (8/8), done.
+Delta compression using up to 4 threads
+Compressing objects: 100% (5/5), done.
+Writing objects: 100% (5/5), 3.68 KiB | 1.23 MiB/s, done.
+Total 5 (delta 2), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (2/2), completed with 1 local object.
+To github.com:yimoyiran/Git-Leaarning.git
+   8c525f5..3b6c438  feature/add_git_commands -> feature/add_git_commands
+```
+
 ## 不同人修改了相同文件的相同区域
+
+修改之前先做一下`git pull`把远端的修改同步下来
+
+```shell
+ibaobao:10-MyNotes bao$ cd git_test
+ibaobao:git_test bao$ git pull
+remote: Enumerating objects: 9, done.
+remote: Counting objects: 100% (8/8), done.
+remote: Compressing objects: 100% (3/3), done.
+remote: Total 5 (delta 2), reused 5 (delta 2), pack-reused 0
+Unpacking objects: 100% (5/5), 3.66 KiB | 624.00 KiB/s, done.
+From github.com:yimoyiran/Git-Leaarning
+   8c525f5..3b6c438  feature/add_git_commands -> origin/feature/add_git_commands
+Updating 8c525f5..3b6c438
+Fast-forward
+ Git.md | 245 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 243 insertions(+), 2 deletions(-)
+ibaobao:git_test bao$ git branch -av
+* feature/add_git_commands_yimo           3b6c438 Merge remote-tracking branch 'github/feature/add_git_commands' into feature/add_git_commands
+  main                                    868a219 Update readMe.md
+  remotes/origin/HEAD                     -> origin/main
+  remotes/origin/feature/add_git_commands 3b6c438 Merge remote-tracking branch 'github/feature/add_git_commands' into feature/add_git_commands
+  remotes/origin/fix_defect01             4883338 add detached head comment
+  remotes/origin/fix_readMe               284e2cf add detached head comments
+  remotes/origin/main                     868a219 Update readMe.md
+  remotes/origin/master                   d1f4499 Merge remote-tracking branch 'github/main' add licence from github to local
+  remotes/origin/temp                     107ce61 Add readMe
+  remotes/origin/testBranch               c242b88 add github_ssh_link.png
+
+```
+
+**`git pull` 相当于执行`git fetch`和`git merge`两步操作**
+fetch先把远端对应branch的更新拉下来
+merge的时候把change更新到本地branch
+
+pull相当于同时做这两步 
+
+如果修改完以后没法push，需要先fetch 远端分支的change，然后与本地分支的chagne 进行merge，如果无法自动merge，需要打开文件手动merge，然后commit，然后push到院端
+
+
+```shell
+ibaobao:git_test bao$ git push
+fatal: The upstream branch of your current branch does not match
+the name of your current branch.  To push to the upstream branch
+on the remote, use
+
+    git push origin HEAD:feature/add_git_commands
+
+To push to the branch of the same name on the remote, use
+
+    git push origin HEAD
+
+ibaobao:git_test bao$ git push origin HEAD:feature/add_git_commands
+To github.com:yimoyiran/Git-Leaarning.git
+ ! [rejected]        HEAD -> feature/add_git_commands (fetch first)
+error: failed to push some refs to 'github.com:yimoyiran/Git-Leaarning.git'
+hint: Updates were rejected because the remote contains work that you do
+hint: not have locally. This is usually caused by another repository pushing
+hint: to the same ref. You may want to first integrate the remote changes
+hint: (e.g., 'git pull ...') before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+ibaobao:git_test bao$ git branch -av
+* feature/add_git_commands_yimo           d291994 [ahead 1] update readMe with yimo
+  main                                    868a219 Update readMe.md
+  remotes/origin/HEAD                     -> origin/main
+  remotes/origin/feature/add_git_commands 3b6c438 Merge remote-tracking branch 'github/feature/add_git_commands' into feature/add_git_commands
+  remotes/origin/fix_defect01             4883338 add detached head comment
+  remotes/origin/fix_readMe               284e2cf add detached head comments
+  remotes/origin/main                     868a219 Update readMe.md
+  remotes/origin/master                   d1f4499 Merge remote-tracking branch 'github/main' add licence from github to local
+  remotes/origin/temp                     107ce61 Add readMe
+  remotes/origin/testBranch               c242b88 add github_ssh_link.png
+ibaobao:git_test bao$ git fetch
+remote: Enumerating objects: 5, done.
+remote: Counting objects: 100% (5/5), done.
+remote: Compressing objects: 100% (1/1), done.
+remote: Total 3 (delta 2), reused 3 (delta 2), pack-reused 0
+Unpacking objects: 100% (3/3), 287 bytes | 47.00 KiB/s, done.
+From github.com:yimoyiran/Git-Leaarning
+   3b6c438..0f1491e  feature/add_git_commands -> origin/feature/add_git_commands
+ibaobao:git_test bao$ git branch -av
+* feature/add_git_commands_yimo           d291994 [ahead 1, behind 1] update readMe with yimo
+  main                                    868a219 Update readMe.md
+  remotes/origin/HEAD                     -> origin/main
+  remotes/origin/feature/add_git_commands 0f1491e update readMe.md with Git
+  remotes/origin/fix_defect01             4883338 add detached head comment
+  remotes/origin/fix_readMe               284e2cf add detached head comments
+  remotes/origin/main                     868a219 Update readMe.md
+  remotes/origin/master                   d1f4499 Merge remote-tracking branch 'github/main' add licence from github to local
+  remotes/origin/temp                     107ce61 Add readMe
+  remotes/origin/testBranch               c242b88 add github_ssh_link.png
+ibaobao:git_test bao$ git merge origin/feature/add_git_commands
+Auto-merging readMe.md
+CONFLICT (content): Merge conflict in readMe.md
+Automatic merge failed; fix conflicts and then commit the result.
+
+ibaobao:git_test bao$ git branch -av
+* feature/add_git_commands_yimo           d291994 [ahead 1, behind 1] update readMe with yimo
+  main                                    868a219 Update readMe.md
+  remotes/origin/HEAD                     -> origin/main
+  remotes/origin/feature/add_git_commands 0f1491e update readMe.md with Git
+  remotes/origin/fix_defect01             4883338 add detached head comment
+  remotes/origin/fix_readMe               284e2cf add detached head comments
+  remotes/origin/main                     868a219 Update readMe.md
+  remotes/origin/master                   d1f4499 Merge remote-tracking branch 'github/main' add licence from github to local
+  remotes/origin/temp                     107ce61 Add readMe
+  remotes/origin/testBranch               c242b88 add github_ssh_link.png
+ibaobao:git_test bao$ clear
+
+ibaobao:git_test bao$ git branch
+* feature/add_git_commands_yimo
+  main
+ibaobao:git_test bao$ git branch -av
+* feature/add_git_commands_yimo           d291994 [ahead 1, behind 1] update readMe with yimo
+  main                                    868a219 Update readMe.md
+  remotes/origin/HEAD                     -> origin/main
+  remotes/origin/feature/add_git_commands 0f1491e update readMe.md with Git
+  remotes/origin/fix_defect01             4883338 add detached head comment
+  remotes/origin/fix_readMe               284e2cf add detached head comments
+  remotes/origin/main                     868a219 Update readMe.md
+  remotes/origin/master                   d1f4499 Merge remote-tracking branch 'github/main' add licence from github to local
+  remotes/origin/temp                     107ce61 Add readMe
+  remotes/origin/testBranch               c242b88 add github_ssh_link.png
+ibaobao:git_test bao$ git pull
+error: Pulling is not possible because you have unmerged files.
+hint: Fix them up in the work tree, and then use 'git add/rm <file>'
+hint: as appropriate to mark resolution and make a commit.
+fatal: Exiting because of an unresolved conflict.
+ibaobao:git_test bao$ ls
+Git.md		LICENSE		image		readMe.md
+ibaobao:git_test bao$ cat readMe.md
+This project is for git learning.
+this is main readMe
+We are going to log some git commands here. eg: Add
+<<<<<<< HEAD
+this is change in yimo
+=======
+this is change in Git
+>>>>>>> origin/feature/add_git_commands
+ibaobao:git_test bao$ vi readMe.md
+ibaobao:git_test bao$ git commit -am "resolved conflict"
+[feature/add_git_commands_yimo f0b1cae] resolved conflict
+ibaobao:git_test bao$ git push 
+fatal: The upstream branch of your current branch does not match
+the name of your current branch.  To push to the upstream branch
+on the remote, use
+
+    git push origin HEAD:feature/add_git_commands
+
+To push to the branch of the same name on the remote, use
+
+    git push origin HEAD
+ibaobao:git_test bao$ git push origin HEAD:feature/add_git_commands
+Enumerating objects: 10, done.
+Counting objects: 100% (10/10), done.
+Delta compression using up to 4 threads
+Compressing objects: 100% (6/6), done.
+Writing objects: 100% (6/6), 552 bytes | 552.00 KiB/s, done.
+Total 6 (delta 4), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (4/4), completed with 2 local objects.
+To github.com:yimoyiran/Git-Leaarning.git
+   0f1491e..f0b1cae  HEAD -> feature/add_git_commands
+```
+## 文件名和文件内容变更了
+
+一个人变更文件名了，先提交
+```shell
+ibaobao:Git bao$ git pull
+Already up to date.
+ibaobao:Git bao$ ls
+Git.md		LICENSE		image		readMe.md
+ibaobao:Git bao$ git mv readMe.md readMe.txt
+ibaobao:Git bao$ git status
+On branch feature/add_git_commands
+Your branch is up to date with 'github/feature/add_git_commands'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	renamed:    readMe.md -> readMe.txt
+
+ibaobao:Git bao$ git commit -am "git mv readMe.md readMe.txt"
+[feature/add_git_commands a118f1a] git mv readMe.md readMe.txt
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ rename readMe.md => readMe.txt (100%)
+ibaobao:Git bao$ git push
+Enumerating objects: 3, done.
+Counting objects: 100% (3/3), done.
+Delta compression using up to 4 threads
+Compressing objects: 100% (2/2), done.
+Writing objects: 100% (2/2), 254 bytes | 254.00 KiB/s, done.
+Total 2 (delta 1), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (1/1), completed with 1 local object.
+To github.com:yimoyiran/Git-Leaarning.git
+   f0b1cae..a118f1a  feature/add_git_commands -> feature/add_git_commands
+
+```
+一个人修改了文件内容，但是还没有同步文件名，后提交-git可以自动merge
+```shell
+ibaobao:git_test bao$ git pull
+Already up to date.
+ibaobao:git_test bao$ ls
+Git.md		LICENSE		image		readMe.md
+ibaobao:git_test bao$ vi readMe.md
+ibaobao:git_test bao$ git add -u
+ibaobao:git_test bao$ git commit "Update readMe.md with repo"
+error: pathspec 'Update readMe.md with repo' did not match any file(s) known to git
+ibaobao:git_test bao$ git commit -m"Update readMe.md with repo"
+[feature/add_git_commands_yimo f0cceef] Update readMe.md with repo
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+ibaobao:git_test bao$ git push
+fatal: The upstream branch of your current branch does not match
+the name of your current branch.  To push to the upstream branch
+on the remote, use
+
+    git push origin HEAD:feature/add_git_commands
+
+To push to the branch of the same name on the remote, use
+
+    git push origin HEAD
+
+ibaobao:git_test bao$ git push origin HEAD:feature/add_git_commands
+To github.com:yimoyiran/Git-Leaarning.git
+ ! [rejected]        HEAD -> feature/add_git_commands (fetch first)
+error: failed to push some refs to 'github.com:yimoyiran/Git-Leaarning.git'
+hint: Updates were rejected because the remote contains work that you do
+hint: not have locally. This is usually caused by another repository pushing
+hint: to the same ref. You may want to first integrate the remote changes
+hint: (e.g., 'git pull ...') before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+ibaobao:git_test bao$ git pull
+remote: Enumerating objects: 3, done.
+remote: Counting objects: 100% (3/3), done.
+remote: Compressing objects: 100% (1/1), done.
+remote: Total 2 (delta 1), reused 2 (delta 1), pack-reused 0
+Unpacking objects: 100% (2/2), 234 bytes | 78.00 KiB/s, done.
+From github.com:yimoyiran/Git-Leaarning
+   f0b1cae..a118f1a  feature/add_git_commands -> origin/feature/add_git_commands
+hint: Pulling without specifying how to reconcile divergent branches is
+hint: discouraged. You can squelch this message by running one of the following
+hint: commands sometime before your next pull:
+hint: 
+hint:   git config pull.rebase false  # merge (the default strategy)
+hint:   git config pull.rebase true   # rebase
+hint:   git config pull.ff only       # fast-forward only
+hint: 
+hint: You can replace "git config" with "git config --global" to set a default
+hint: preference for all repositories. You can also pass --rebase, --no-rebase,
+hint: or --ff-only on the command line to override the configured default per
+hint: invocation.
+Merge made by the 'recursive' strategy.
+ readMe.md => readMe.txt | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ rename readMe.md => readMe.txt (100%)
+ibaobao:git_test bao$ ls
+Git.md		LICENSE		image		readMe.txt
+ibaobao:git_test bao$ cat readMe.txt
+This project is for git learning.
+this is main readMe
+We are going to log some git commands here. eg: Add
+this is change in yimo
+this is change in Git repo
+ibaobao:git_test bao$ git status
+On branch feature/add_git_commands_yimo
+Your branch is ahead of 'origin/feature/add_git_commands' by 2 commits.
+  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean
+ibaobao:git_test bao$ git push
+fatal: The upstream branch of your current branch does not match
+the name of your current branch.  To push to the upstream branch
+on the remote, use
+
+    git push origin HEAD:feature/add_git_commands
+
+To push to the branch of the same name on the remote, use
+
+    git push origin HEAD
+
+ibaobao:git_test bao$ git push origin HEAD:feature/add_git_commands
+Enumerating objects: 8, done.
+Counting objects: 100% (8/8), done.
+Delta compression using up to 4 threads
+Compressing objects: 100% (5/5), done.
+Writing objects: 100% (5/5), 573 bytes | 573.00 KiB/s, done.
+Total 5 (delta 3), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (3/3), completed with 3 local objects.
+To github.com:yimoyiran/Git-Leaarning.git
+   a118f1a..152284d  HEAD -> feature/add_git_commands
+ibaobao:git_test bao$ git branch -av
+* feature/add_git_commands_yimo           152284d Merge branch 'feature/add_git_commands' of github.com:yimoyiran/Git-Leaarning into feature/add_git_commands_yimo
+  main                                    868a219 Update readMe.md
+  remotes/origin/HEAD                     -> origin/main
+  remotes/origin/feature/add_git_commands 152284d Merge branch 'feature/add_git_commands' of github.com:yimoyiran/Git-Leaarning into feature/add_git_commands_yimo
+  remotes/origin/fix_defect01             4883338 add detached head comment
+  remotes/origin/fix_readMe               284e2cf add detached head comments
+  remotes/origin/main                     868a219 Update readMe.md
+  remotes/origin/master                   d1f4499 Merge remote-tracking branch 'github/main' add licence from github to local
+  remotes/origin/temp                     107ce61 Add readMe
+  remotes/origin/testBranch               c242b88 add github_ssh_link.png
+```
+
+## 禁止向集成分支执行`push -f`
+## 禁止向集成分支执行变更历史的操作
